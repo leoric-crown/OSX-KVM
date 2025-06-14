@@ -23,17 +23,17 @@ MY_OPTIONS="+ssse3,+sse4.2,+popcnt,+avx,+aes,+xsave,+xsaveopt,check"
 # This script works for Big Sur, Catalina, Mojave, and High Sierra. Tested with
 # macOS 10.15.6, macOS 10.14.6, and macOS 10.13.6.
 
-ALLOCATED_RAM="4096" # MiB
+ALLOCATED_RAM="16384" # MiB
 CPU_SOCKETS="1"
-CPU_CORES="2"
-CPU_THREADS="4"
+CPU_CORES="8"
+CPU_THREADS="16"
 
 REPO_PATH="."
 OVMF_DIR="."
 
 # shellcheck disable=SC2054
 args=(
-  -enable-kvm -m "$ALLOCATED_RAM" -cpu Penryn,kvm=on,vendor=GenuineIntel,+invtsc,vmware-cpuid-freq=on,"$MY_OPTIONS"
+  -enable-kvm -m "$ALLOCATED_RAM" -cpu Haswell-noTSX,kvm=on,vendor=GenuineIntel,+invtsc,vmware-cpuid-freq=on,"$MY_OPTIONS"
   -machine q35
   -device qemu-xhci,id=xhci
   -device usb-kbd,bus=xhci.0 -device usb-tablet,bus=xhci.0
@@ -59,10 +59,13 @@ args=(
   -drive id=MacHDD,if=none,file="$REPO_PATH/mac_hdd_ng.img",format=qcow2
   -device ide-hd,bus=sata.4,drive=MacHDD
   # -netdev tap,id=net0,ifname=tap0,script=no,downscript=no -device virtio-net-pci,netdev=net0,id=net0,mac=52:54:00:c9:18:27
-  -netdev user,id=net0,hostfwd=tcp::2222-:22 -device virtio-net-pci,netdev=net0,id=net0,mac=52:54:00:c9:18:27
+  # -netdev user,id=net0,hostfwd=tcp::2222-:22 -device virtio-net-pci,netdev=net0,id=net0,mac=52:54:00:c9:18:27
+  -netdev bridge,id=net0,br=br0 -device virtio-net-pci,netdev=net0,id=net0,mac=52:54:00:c9:18:27
+  
   # -netdev user,id=net0 -device vmxnet3,netdev=net0,id=net0,mac=52:54:00:c9:18:27  # Note: Use this line for High Sierra
   -monitor stdio
-  -device vmware-svga
+  # -device vmware-svga
+  -device VGA,vgamem_mb=2048
   # -spice port=5900,addr=127.0.0.1,disable-ticketing=on
 )
 
