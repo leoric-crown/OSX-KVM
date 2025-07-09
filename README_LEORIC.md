@@ -20,7 +20,7 @@ This sets the NVRAM boot entry, allowing OpenCore to boot directly into macOS on
 
 ### 2. OpenCore `config.plist` Tweaks
 
-To mount the OpenCore partition, you can use the following commands:
+To mount the OpenCore partition of a working VM install, you can use the following commands:
 
 ```bash
 sudo guestmount -a ~/vms/OSX-KVM/OpenCore/OpenCore.qcow2 -m /dev/sda1 /mnt/OpenCore
